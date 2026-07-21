@@ -57,6 +57,17 @@ jobs:
           tags: |
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/3-track-upstream-hamlib-releases' }}
             type=raw,value=${{ steps.hamlib.outputs.tag }},enable=${{ steps.hamlib.outputs.tag != 'latest' }}
+          labels: |
+            org.opencontainers.image.title=rigctld
+            org.opencontainers.image.description=Containerized Hamlib radio control daemon
+            org.opencontainers.image.source=https://github.com/tviitkar/rigctld
+            org.opencontainers.image.licenses=MIT
+          annotations: |
+            org.opencontainers.image.title=rigctld
+            org.opencontainers.image.description=Containerized Hamlib radio control daemon
+            org.opencontainers.image.source=https://github.com/tviitkar/rigctld
+            org.opencontainers.image.licenses=MIT
+            manifest:org.opencontainers.image.description=Containerized Hamlib radio control daemon
 
       - name: Build and Push Multi-Arch Docker Image
         uses: docker/build-push-action@v6
