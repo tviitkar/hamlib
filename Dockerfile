@@ -1,5 +1,10 @@
 FROM alpine:3.20
 
+LABEL org.opencontainers.image.title="rigctld"
+LABEL org.opencontainers.image.description="Containerized Hamlib radio control daemon"
+LABEL org.opencontainers.image.source="https://github.com/tviitkar/rigctld"
+LABEL org.opencontainers.image.licenses="MIT"
+
 RUN adduser -D -G dialout -u 1000 ham && \
     apk add --no-cache hamlib
 
