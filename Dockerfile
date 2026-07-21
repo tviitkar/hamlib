@@ -5,6 +5,7 @@ LABEL org.opencontainers.image.description="Containerized Hamlib radio control d
 LABEL org.opencontainers.image.source="https://github.com/tviitkar/rigctld"
 LABEL org.opencontainers.image.licenses="MIT"
 
+#hadolint ignore=DL3018
 RUN adduser -D -G dialout -u 1000 ham && \
     apk add --no-cache hamlib
 
