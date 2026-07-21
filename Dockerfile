@@ -1,9 +1,7 @@
-FROM alpine:latest
+FROM alpine:3.20
 
 RUN adduser -D -G dialout -u 1000 ham && \
-    apk update && \
-    apk add --no-cache hamlib && \
-    rm -rf /var/cache/apk/*
+    apk add --no-cache hamlib
 
 USER ham
 WORKDIR /home/ham
