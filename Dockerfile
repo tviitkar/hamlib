@@ -1,8 +1,8 @@
-FROM alpine:3.20
+FROM alpine:3.24
 
-LABEL org.opencontainers.image.title="rigctld"
-LABEL org.opencontainers.image.description="Containerized Hamlib radio control daemon"
-LABEL org.opencontainers.image.source="https://github.com/tviitkar/rigctld"
+LABEL org.opencontainers.image.title="hamlib"
+LABEL org.opencontainers.image.description="Containerized Hamlib suite"
+LABEL org.opencontainers.image.source="https://github.com/tviitkar/hamlib"
 LABEL org.opencontainers.image.licenses="MIT"
 
 #hadolint ignore=DL3018
@@ -12,7 +12,4 @@ RUN adduser -D -G dialout -u 1000 ham && \
 USER ham
 WORKDIR /home/ham
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-    CMD sh -c "rigctl -m 2 -r 127.0.0.1:4532 f 2>&1 | grep -q '^[0-9]' || exit 1"
-
-ENTRYPOINT ["rigctld"]
+CMD ["sh"]
