@@ -89,12 +89,14 @@ listening and that the connected transceiver responds to frequency queries.
 
 ## References
 
-- [Hamlib | GitHub](https://github.com/Hamlib/Hamlib)
-- [Hamlib | Supported Radios](https://github.com/Hamlib/Hamlib/wiki/Supported-Radios)
-- [rigctld | Manual](https://www.mankier.com/1/rigctld)
+- [Hamlib](https://github.com/Hamlib/Hamlib)
+- [Hamlib supported radios](https://github.com/Hamlib/Hamlib/wiki/Supported-Radios)
+- [Rigctld manual](https://www.mankier.com/1/rigctld)
 
 ---
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+The Docker build scripts and documentation in this repository are licensed under the [MIT License](LICENSE).
+
+Hamlib binaries packaged inside the container image are subject to their respective upstream licenses ([GPL-2.0](https://github.com/Hamlib/Hamlib/blob/master/COPYING) and [LGPL-2.1](https://github.com/Hamlib/Hamlib/blob/master/COPYING.LIB)).
