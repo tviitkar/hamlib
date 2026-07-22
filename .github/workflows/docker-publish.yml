@@ -89,14 +89,14 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: |
-            index:org.opencontainers.image.title=rigctld
-            index:org.opencontainers.image.description=Containerized Hamlib radio control daemon
-            index:org.opencontainers.image.source=https://github.com/tviitkar/rigctld
+            index:org.opencontainers.image.title=hamlib
+            index:org.opencontainers.image.description=Containerized Hamlib suite
+            index:org.opencontainers.image.source=https://github.com/tviitkar/hamlib
             index:org.opencontainers.image.licenses=MIT
-            manifest:org.opencontainers.image.title=rigctld
-            manifest:org.opencontainers.image.description=Containerized Hamlib radio control daemon
-            manifest:org.opencontainers.image.source=https://github.com/tviitkar/rigctld
+            manifest:org.opencontainers.image.title=hamlib
+            manifest:org.opencontainers.image.description=Containerized Hamlib suite
+            manifest:org.opencontainers.image.source=https://github.com/tviitkar/hamlib
             manifest:org.opencontainers.image.licenses=MIT
-            manifest-descriptor:org.opencontainers.image.description=Containerized Hamlib radio control daemon
+            manifest-descriptor:org.opencontainers.image.description=Containerized Hamlib suite
           cache-from: type=gha
           cache-to: type=gha,mode=max
