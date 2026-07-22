@@ -1,102 +1,90 @@
-# rigctld
+# Hamlib
 
 ## Overview
 
-`rigctld` is a radio control daemon from the Hamlib project that enables
-control of a transceiver over TCP. It allows multiple client applications
-(such as WSJT-X, FLrig, gpredict, Log4OM, N1MM) to share access to a single
-radio device over network socket port `4532`.
+`hamlib` provides containerized network control daemons and command-line
+utilities from the [Hamlib](https://github.com/Hamlib/Hamlib) project on Alpine
+Linux.
 
-This containerized version packages `rigctld` on Alpine Linux for easy,
-non-root deployment.
+This container image packages the entire Hamlib software suite (`rigctld`,
+`rotctld`, `ampctl`, `rigctl`, `rotctl`, etc.) into a lightweight, non-root
+image (`ghcr.io/tviitkar/hamlib`).
 
----
+- **`rigctld`**: Transceiver control daemon (default port `4532`).
+- **`rotctld`**: Antenna rotator control daemon (default port `4533`).
+- **`ampctl`**: Linear amplifier control daemon (default port `4535`).
+- **`rigctl` / `rotctl` / `ampctl`**: Command-line control and testing utilities.
 
-## Example Usage (Docker Compose)
+## Examples
+
+### Docker Compose
 
 ```yaml
 services:
   rigctld:
-    image: ghcr.io/tviitkar/rigctld:latest
+    image: ghcr.io/tviitkar/hamlib:latest
     container_name: rigctld
+    command: rigctld -m 1
     ports:
       - "4532:4532"
-    devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
-    group_add:
-      - dialout
-    command: ["-m", "1042", "-r", "/dev/ttyUSB0", "-s", "38400"]
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "rigctl -m 2 -r 127.0.0.1:4532 f 2>&1 | grep -q '^[0-9]' || exit 1"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     restart: unless-stopped
     read_only: true
 ```
 
----
-
-## Example Usage (Docker CLI)
+### Docker CLI
 
 ```bash
 docker run -d \
   --name rigctld \
   -p 4532:4532 \
-  --device /dev/ttyUSB0:/dev/ttyUSB0 \
-  --group-add dialout \
   --read-only \
   --restart unless-stopped \
-  ghcr.io/tviitkar/rigctld:latest \
-  -m 1042 -r /dev/ttyUSB0 -s 38400
+  ghcr.io/tviitkar/hamlib:latest \
+  rigctld -m 1
 ```
 
----
-
-## Serial Device Permissions & Host GID
+## Serial Device Permissions
 
 The container runs as a non-root user (`ham`, UID 1000) belonging to Alpine's
 `dialout` group.
 
-On some host operating systems (like Arch Linux, Fedora, or custom distros),
-the physical serial device node (e.g., `/dev/ttyUSB0` or `/dev/ttyACM0`) may
-belong to a group with a different Group ID (GID).
+On host operating systems where physical serial device nodes (e.g.,
+`/dev/ttyUSB0` or `/dev/ttyACM0`) belong to a different Group ID (GID):
 
-- **Docker CLI**: Pass `--group-add dialout` or `--group-add <gid>` (e.g.,
-  `--group-add 987`).
-- **Docker Compose**: Add `group_add: ["dialout"]` or specify the numeric host
-  serial GID `group_add: ["987"]`.
+- **Docker CLI**: Pass `--device /dev/ttyUSB0:/dev/ttyUSB0 --group-add dialout`
+  or `--group-add <gid>` (e.g., `--group-add 987`).
+- **Docker Compose**: Add `devices: ["/dev/ttyUSB0:/dev/ttyUSB0"]` and
+  `group_add: ["dialout"]` (or numeric host serial GID `group_add: ["987"]`).
 
----
+## Healthchecks
 
-## Command Flags & Parameters
+Healthchecks should be configured in your `docker-compose.yml` or container
+orchestrator based on the daemon being executed.
 
-- `-m <model>`: Hamlib radio model number (e.g., `1042` for Yaesu FT-891, `3081`
-  for Icom IC-7300, `2` for NET rigctl).
-- `-r <device>`: Path to serial device node (e.g., `/dev/ttyUSB0`,
-  `/dev/ttyACM0`).
-- `-s <baud>`: Serial port speed / baud rate (e.g., `38400`, `115200`).
-
----
-
-## Container Healthcheck
-
-The image includes a built-in healthcheck:
+For example, testing a `rigctld` daemon on port 4532:
 
 ```sh
-rigctl -m 2 -r 127.0.0.1:4532 f
+rigctl -m 2 -r 127.0.0.1:4532 f 2>&1 | grep -q '^[0-9]' || exit 1
 ```
-
-It queries the `rigctld` daemon over loopback to verify that the daemon is
-listening and that the connected transceiver responds to frequency queries.
-
----
 
 ## References
 
 - [Hamlib](https://github.com/Hamlib/Hamlib)
-- [Hamlib supported radios](https://github.com/Hamlib/Hamlib/wiki/Supported-Radios)
-- [Rigctld manual](https://www.mankier.com/1/rigctld)
-
----
 
 ## License
 
-The Docker build scripts and documentation in this repository are licensed under the [MIT License](LICENSE).
+The Docker build scripts and documentation in this repository are licensed
+under the [MIT License](LICENSE).
 
-Hamlib binaries packaged inside the container image are subject to their respective upstream licenses ([GPL-2.0](https://github.com/Hamlib/Hamlib/blob/master/COPYING) and [LGPL-2.1](https://github.com/Hamlib/Hamlib/blob/master/COPYING.LIB)).
+Hamlib binaries packaged inside the container image are subject to their
+respective upstream licenses
+([GPL-2.0](https://github.com/Hamlib/Hamlib/blob/master/COPYING) and
+[LGPL-2.1](https://github.com/Hamlib/Hamlib/blob/master/COPYING.LIB)).
