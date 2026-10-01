@@ -1,6 +1,6 @@
 FROM alpine:3.24 AS build
 
-ARG HAMLIB_VERSION=4.7.1
+ARG HAMLIB_VERSION=4.7.2
 
 #hadolint ignore=DL3018
 RUN apk add --no-cache build-base curl libusb-dev linux-headers

@@ -55,7 +55,7 @@ docker run -d \
 ## Image Tags
 
 - **`latest`**: Most recent release build.
-- **`<version>`** (e.g. `4.7.1`): Release build of a specific Hamlib version.
+- **`<version>`** (e.g. `4.7.2`): Release build of a specific Hamlib version.
 - **`<version>-devel`**: Pre-release test build from a feature branch. Removed
   once the version is released.
 
