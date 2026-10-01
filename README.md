@@ -4,15 +4,16 @@
 
 `hamlib` provides containerized network control daemons and command-line
 utilities from the [Hamlib](https://github.com/Hamlib/Hamlib) project on Alpine
-Linux.
+Linux. Hamlib is built from the official upstream release tarball, so new
+versions are available without waiting for distribution packages.
 
 This container image packages the entire Hamlib software suite (`rigctld`,
-`rotctld`, `ampctl`, `rigctl`, `rotctl`, etc.) into a lightweight, non-root
+`rotctld`, `ampctld`, `rigctl`, `rotctl`, etc.) into a lightweight, non-root
 image (`ghcr.io/tviitkar/hamlib`).
 
 - **`rigctld`**: Transceiver control daemon (default port `4532`).
 - **`rotctld`**: Antenna rotator control daemon (default port `4533`).
-- **`ampctl`**: Linear amplifier control daemon (default port `4535`).
+- **`ampctld`**: Linear amplifier control daemon (default port `4531`).
 - **`rigctl` / `rotctl` / `ampctl`**: Command-line control and testing utilities.
 
 ## Examples
@@ -51,6 +52,15 @@ docker run -d \
   rigctld -m 1
 ```
 
+## Image Tags
+
+- **`latest`**: Most recent release build.
+- **`<version>`** (e.g. `4.7.1`): Release build of a specific Hamlib version.
+- **`<version>-devel`**: Pre-release test build from a feature branch. Removed
+  once the version is released.
+
+Images are published for `linux/amd64`, `linux/arm64` and `linux/arm/v7`.
+
 ## Serial Device Permissions
 
 The container runs as a non-root user (`ham`, UID 1000) belonging to Alpine's
@@ -84,7 +94,7 @@ rigctl -m 2 -r 127.0.0.1:4532 f 2>&1 | grep -q '^[0-9]' || exit 1
 The Docker build scripts and documentation in this repository are licensed
 under the [MIT License](LICENSE).
 
-Hamlib binaries packaged inside the container image are subject to their
+Hamlib binaries built inside the container image are subject to their
 respective upstream licenses
 ([GPL-2.0](https://github.com/Hamlib/Hamlib/blob/master/COPYING) and
 [LGPL-2.1](https://github.com/Hamlib/Hamlib/blob/master/COPYING.LIB)).

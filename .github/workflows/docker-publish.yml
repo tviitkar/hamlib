@@ -1,8 +1,6 @@
 name: Build and Publish Docker Image
 
 on:
-  schedule:
-    - cron: '0 4 * * *'
   workflow_dispatch:
   push:
     branches:
@@ -22,53 +20,31 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Fetch Installed Hamlib Package Version
+      - name: Read Hamlib Version from Dockerfile
         id: hamlib
         run: |
-          docker build -t temp-build .
-          INSTALLED_VERSION=$(docker run --rm temp-build rigctld -V | head -n1 | sed -E 's/.*Hamlib ([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
-          if [ -z "$INSTALLED_VERSION" ]; then
-            INSTALLED_VERSION="latest"
+          VERSION=$(sed -n 's/^ARG HAMLIB_VERSION=//p' Dockerfile)
+          if [ -z "$VERSION" ]; then
+            echo "::error::HAMLIB_VERSION not found in Dockerfile"
+            exit 1
           fi
-          echo "tag=${INSTALLED_VERSION}" >> $GITHUB_OUTPUT
-          echo "Installed Hamlib package version: ${INSTALLED_VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Hamlib version: ${VERSION}"
 
       - name: Log in to GitHub Container Registry
-        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check if Version Tag Already Exists on GHCR
-        id: check_tag
-        run: |
-          CLEAN_TAG="${{ steps.hamlib.outputs.tag }}"
-          if [ "$CLEAN_TAG" = "latest" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "skip=false" >> $GITHUB_OUTPUT
-            echo "Manual trigger or latest tag. Proceeding with build."
-            exit 0
-          fi
-
-          if docker manifest inspect ghcr.io/${{ github.repository }}:${CLEAN_TAG} >/dev/null 2>&1; then
-            echo "Version tag ${CLEAN_TAG} is already published on GHCR."
-            echo "skip=true" >> $GITHUB_OUTPUT
-          else
-            echo "Version tag ${CLEAN_TAG} is NOT published on GHCR yet. Proceeding with build."
-            echo "skip=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Set up QEMU
-        if: steps.check_tag.outputs.skip != 'true'
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        if: steps.check_tag.outputs.skip != 'true'
         uses: docker/setup-buildx-action@v3
 
       - name: Extract Docker Metadata
-        if: steps.check_tag.outputs.skip != 'true'
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -76,16 +52,20 @@ jobs:
             ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-            type=raw,value=${{ steps.hamlib.outputs.tag }},enable=${{ steps.hamlib.outputs.tag != 'latest' }}
+            type=raw,value=${{ steps.hamlib.outputs.version }},enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=${{ steps.hamlib.outputs.version }}-devel,enable=${{ github.ref != 'refs/heads/main' }}
+          labels: |
+            org.opencontainers.image.description=Containerized Hamlib suite
 
       - name: Build and Push Multi-Arch Docker Image
-        if: steps.check_tag.outputs.skip != 'true'
         uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64,linux/arm64,linux/arm/v7
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           provenance: false
+          build-args: |
+            HAMLIB_VERSION=${{ steps.hamlib.outputs.version }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: |
@@ -100,3 +80,9 @@ jobs:
             manifest-descriptor:org.opencontainers.image.description=Containerized Hamlib suite
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Delete Devel Tag of Released Version
+        if: github.ref == 'refs/heads/main'
+        uses: dataaxiom/ghcr-cleanup-action@v1
+        with:
+          delete-tags: ${{ steps.hamlib.outputs.version }}-devel
