@@ -14,7 +14,7 @@ RUN curl -fsSLO "https://github.com/Hamlib/Hamlib/releases/download/${HAMLIB_VER
 
 WORKDIR /src/hamlib-${HAMLIB_VERSION}
 
-# musl defines mode_t, which clashes with the harris backend prototype
+# harris.h uses mode_t instead of rmode_t; musl doesn't define mode_t there
 RUN sed -i 's/vfo_t vfo, mode_t mode/vfo_t vfo, rmode_t mode/' rigs/harris/harris.h && \
     ./configure \
         --prefix=/usr/local \
