@@ -1,6 +1,6 @@
 FROM alpine:3.24 AS build
 
-ARG HAMLIB_VERSION=4.7.1
+ARG HAMLIB_VERSION=4.7.2
 
 #hadolint ignore=DL3018
 RUN apk add --no-cache build-base curl libusb-dev linux-headers
@@ -14,7 +14,7 @@ RUN curl -fsSLO "https://github.com/Hamlib/Hamlib/releases/download/${HAMLIB_VER
 
 WORKDIR /src/hamlib-${HAMLIB_VERSION}
 
-# musl defines mode_t, which clashes with the harris backend prototype
+# harris.h uses mode_t instead of rmode_t; musl doesn't define mode_t there
 RUN sed -i 's/vfo_t vfo, mode_t mode/vfo_t vfo, rmode_t mode/' rigs/harris/harris.h && \
     ./configure \
         --prefix=/usr/local \
@@ -35,7 +35,7 @@ FROM alpine:3.24
 LABEL org.opencontainers.image.title="hamlib"
 LABEL org.opencontainers.image.description="Containerized Hamlib suite"
 LABEL org.opencontainers.image.source="https://github.com/tviitkar/hamlib"
-LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.licenses="MIT AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.1-or-later"
 
 #hadolint ignore=DL3018
 RUN adduser -D -G dialout -u 1000 ham && \

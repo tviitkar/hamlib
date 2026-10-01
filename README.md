@@ -55,7 +55,7 @@ docker run -d \
 ## Image Tags
 
 - **`latest`**: Most recent release build.
-- **`<version>`** (e.g. `4.7.1`): Release build of a specific Hamlib version.
+- **`<version>`** (e.g. `4.7.2`): Release build of a specific Hamlib version.
 - **`<version>-devel`**: Pre-release test build from a feature branch. Removed
   once the version is released.
 
@@ -95,6 +95,18 @@ The Docker build scripts and documentation in this repository are licensed
 under the [MIT License](LICENSE).
 
 Hamlib binaries built inside the container image are subject to their
-respective upstream licenses
-([GPL-2.0](https://github.com/Hamlib/Hamlib/blob/master/COPYING) and
-[LGPL-2.1](https://github.com/Hamlib/Hamlib/blob/master/COPYING.LIB)).
+respective upstream licenses: the programs (`rigctld`, `rotctld`, etc.) are
+[GPL-2.0-or-later](https://github.com/Hamlib/Hamlib/blob/master/COPYING), and
+the `libhamlib` library is
+[LGPL-2.1-or-later](https://github.com/Hamlib/Hamlib/blob/master/COPYING.LIB)
+but also includes bundled code under GPL-2.0-or-later,
+[GPL-3.0-or-later](https://www.gnu.org/licenses/gpl-3.0.html) and MIT.
+
+### Source Code
+
+Each image is built from the official Hamlib release tarball for its version
+(`https://github.com/Hamlib/Hamlib/releases/download/<version>/hamlib-<version>.tar.gz`),
+with one change applied by the [`Dockerfile`](Dockerfile): a type name fix in
+`rigs/harris/harris.h` required to compile on Alpine's musl C library. Hamlib's
+license files (GPL-2.0 and LGPL-2.1 texts) are included in the image under
+`/usr/local/share/doc/hamlib`.
