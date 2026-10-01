@@ -31,6 +31,7 @@ docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:latest
 - A `sed` fixes a `mode_t`/`rmode_t` prototype in `rigs/harris/harris.h` that fails on musl (same fix as Alpine's aports patch); it is a no-op once upstream fixes it.
 - Final stage copies `/usr/local` from the build stage; runs as UID 1000 (`ham`, `dialout` group) so serial devices can be passed through; must work with `--read-only`. `CMD ["sh"]` — users supply the daemon as the command.
 - OCI metadata lives in three places that must stay in sync: Dockerfile `LABEL`s, the `annotations` of the build step in `docker-publish.yml`, and the `labels` override of `docker/metadata-action` (needed because the action otherwise fills `description` and `licenses` from the GitHub repo settings). The image license is `MIT AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.1-or-later` (repo files and bundled cJSON MIT, Hamlib programs GPL-2.0+, `libhamlib` LGPL-2.1+ but it also links GPL-2.0+ `security/aes.c`/`sha256.c` and GPL-3.0+ `lib/precise_time.c`). Re-check bundled files' licenses when bumping Hamlib.
+- `metadata-action` uses the highest-`priority` tag for the `org.opencontainers.image.version` label, which is why the version tags have `priority=300` (above `latest`).
 
 ## CI/CD (`.github/workflows/`)
 

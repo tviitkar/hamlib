@@ -51,9 +51,9 @@ jobs:
           images: |
             ghcr.io/${{ github.repository }}
           tags: |
+            type=raw,value=${{ steps.hamlib.outputs.version }},enable=${{ github.ref == 'refs/heads/main' }},priority=300
+            type=raw,value=${{ steps.hamlib.outputs.version }}-devel,enable=${{ github.ref != 'refs/heads/main' }},priority=300
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-            type=raw,value=${{ steps.hamlib.outputs.version }},enable=${{ github.ref == 'refs/heads/main' }}
-            type=raw,value=${{ steps.hamlib.outputs.version }}-devel,enable=${{ github.ref != 'refs/heads/main' }}
           labels: |
             org.opencontainers.image.description=Containerized Hamlib suite
             org.opencontainers.image.licenses=MIT AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.1-or-later
