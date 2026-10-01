@@ -56,6 +56,7 @@ jobs:
             type=raw,value=${{ steps.hamlib.outputs.version }}-devel,enable=${{ github.ref != 'refs/heads/main' }}
           labels: |
             org.opencontainers.image.description=Containerized Hamlib suite
+            org.opencontainers.image.licenses=MIT AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.1-or-later
 
       - name: Build and Push Multi-Arch Docker Image
         uses: docker/build-push-action@v6
@@ -72,11 +73,11 @@ jobs:
             index:org.opencontainers.image.title=hamlib
             index:org.opencontainers.image.description=Containerized Hamlib suite
             index:org.opencontainers.image.source=https://github.com/tviitkar/hamlib
-            index:org.opencontainers.image.licenses=MIT
+            index:org.opencontainers.image.licenses=MIT AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.1-or-later
             manifest:org.opencontainers.image.title=hamlib
             manifest:org.opencontainers.image.description=Containerized Hamlib suite
             manifest:org.opencontainers.image.source=https://github.com/tviitkar/hamlib
-            manifest:org.opencontainers.image.licenses=MIT
+            manifest:org.opencontainers.image.licenses=MIT AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.1-or-later
             manifest-descriptor:org.opencontainers.image.description=Containerized Hamlib suite
           cache-from: type=gha
           cache-to: type=gha,mode=max

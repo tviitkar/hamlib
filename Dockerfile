@@ -35,7 +35,7 @@ FROM alpine:3.24
 LABEL org.opencontainers.image.title="hamlib"
 LABEL org.opencontainers.image.description="Containerized Hamlib suite"
 LABEL org.opencontainers.image.source="https://github.com/tviitkar/hamlib"
-LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.licenses="MIT AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.1-or-later"
 
 #hadolint ignore=DL3018
 RUN adduser -D -G dialout -u 1000 ham && \
